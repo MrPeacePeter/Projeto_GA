@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "stm32f3xx_hal.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -50,7 +51,7 @@ typedef EstadoID Estadofunc(Contexto *ctx);
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SAMPLES 20
+#define SAMPLES 10
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -188,6 +189,7 @@ EstadoID tlp(Contexto *ctx){
   printf("Peso: %.2f g\r\n", weight);
   Leds(weight);
 
+  HAL_Delay(500); //Delay para evitar leituras muito rápidas e permitir a visualização dos LEDs
   if(weight > 990.0f){
     LedOff(Led_Verd_GPIO_Port, Led_Verd_Pin);
     LedOff(Led_Ama_GPIO_Port, Led_Ama_Pin);
