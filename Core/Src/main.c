@@ -131,6 +131,17 @@ bool BtnDebounce(bool currentState, bool *stableState, uint32_t *lastChangeTime,
 }
 
 //Função - Leds
+void Leds(float weight){
+  if(weight > 989.0f){
+
+  }else if(weight > 500.0f){
+
+  }else if(weight > 200.0f){
+
+  }else{
+
+  }
+}
 
 //----------**Máquina de estados**----------
 
