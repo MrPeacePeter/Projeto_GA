@@ -81,11 +81,11 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-// ** Habilita o uso do printf para enviar dados pelo UART ** (Não estou considerando como requisito, mas sim para 
-//                                                             comunicar com o computador e utilizar o printf)
+// -------** Habilita o uso do printf para enviar dados pelo UART **-------
+// (Não estou considerando como requisito, mas sim para comunicar com o computador e utilizar o printf)
 void _write(int file, char *ptr, int len) {
-    // Transmit the data over UART
-    HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, HAL_MAX_DELAY);
+  // Transmit the data over UART
+  HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, HAL_MAX_DELAY);
 }
 
 //----------**Declaração de funções**----------
@@ -110,7 +110,6 @@ float Cronometro(uint32_t startTime){
 }
 
 //Função - Debounce Btn
-
 bool BtnDebounce(bool currentState, bool *stableState, uint32_t *lastChangeTime, uint32_t debounceDelay){
   uint32_t now = HAL_GetTick();
 
@@ -143,7 +142,7 @@ EstadoID setup(Contexto *ctx){
 EstadoID start(Contexto *ctx){
   bool btnPressed = (HAL_GPIO_ReadPin(Start_GPIO_Port, Start_Pin) != GPIO_PIN_RESET);
   
-  
+  //Start button
   if (BtnDebounce(btnPressed, &lastBtnStartState, &LastStartTime, debounceDelay)){
     return EST_TimerLedPeso;
   }
@@ -164,7 +163,9 @@ EstadoID tlp(Contexto *ctx){
   
   HAL_GPIO_WritePin(LedProto_GPIO_Port, LedProto_Pin, GPIO_PIN_SET);
 
-  if (BtnDebounce(btnPressed, &lastBtnStartState, &LastStartTime, debounceDelay)){
+  //Reset button
+  if (BtnDebounce(btnPressed, &lastBtnResetState, &LastResetTime, debounceDelay)){
+    printf("BOTÃO RESET PRESSIONADO - Resetando a máquina lógica.\r\n");
     printf("Tempo Final: %.2f s\r\n", Cronometro(true));
     Cronometro(false);
 
@@ -178,9 +179,10 @@ EstadoID tlp(Contexto *ctx){
 
 EstadoID cpp(Contexto *ctx){
 
+  //Reset button
   if( BtnDebounce(HAL_GPIO_ReadPin(Reset_GPIO_Port, Reset_Pin), &lastBtnResetState, &LastResetTime, debounceDelay)){
+    printf("BOTÃO RESET PRESSIONADO - Resetando a máquina lógica.\r\n");
     return EST_START;
-
   }
   
   return EST_CalcPrint_Peso;
@@ -220,7 +222,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   Contexto meuContexto = {0};
-    EstadoID estadoAtual = EST_SETUP;
+  EstadoID estadoAtual = EST_SETUP;
 
     Estadofunc *tabela_estados[] = {
       [EST_SETUP] = setup,
