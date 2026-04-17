@@ -131,15 +131,19 @@ bool BtnDebounce(bool currentState, bool *stableState, uint32_t *lastChangeTime,
 }
 
 //Função - Leds
-void Leds(float weight){
-  if(weight > 989.0f){
+void LedOn(GPIO_TypeDef* GPIO_Port, uint16_t GPIO_Pin){
+  HAL_GPIO_WritePin(GPIO_Port, GPIO_Pin, GPIO_PIN_SET);
+}
 
-  }else if(weight > 500.0f){
-
-  }else if(weight > 200.0f){
-
+void Leds(float Weight){
+  if(Weight > 989.0f){
+    LedOn(Led_Verd_GPIO_Port, Led_Verd_Pin);
+  }else if(Weight > 500.0f){
+    LedOn(Led_Ama_GPIO_Port, Led_Ama_Pin);
+  }else if(Weight > 200.0f){
+    LedOn(Led_Laran_GPIO_Port, Led_Laran_Pin);
   }else{
-
+    LedOn(Led_Verm_GPIO_Port, Led_Verm_Pin);
   }
 }
 
@@ -178,6 +182,7 @@ EstadoID tlp(Contexto *ctx){
   
   float weight = HX711_GetWeight(&hx, SAMPLES, ctx->Factor_Calibration);
   printf("Peso: %.2f g\r\n", weight);
+  Leds(weight);
 
   if(weight > 990.0f){
     return EST_CalcPrint_Peso;
