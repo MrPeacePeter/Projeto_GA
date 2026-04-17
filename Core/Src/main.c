@@ -156,7 +156,7 @@ void Leds(float Weight){
 
 EstadoID setup(Contexto *ctx){
   ctx->Tempo = 0.0f;
-  ctx->Factor_Calibration = 447.6f;
+  ctx->Factor_Calibration = 420.6f;
   ctx->FirstEntry = true;
   return EST_START;
 }
