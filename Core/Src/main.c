@@ -135,6 +135,10 @@ void LedOn(GPIO_TypeDef* GPIO_Port, uint16_t GPIO_Pin){
   HAL_GPIO_WritePin(GPIO_Port, GPIO_Pin, GPIO_PIN_SET);
 }
 
+void LedOff(GPIO_TypeDef* GPIO_Port, uint16_t GPIO_Pin){
+  HAL_GPIO_WritePin(GPIO_Port, GPIO_Pin, GPIO_PIN_RESET);
+}
+
 void Leds(float Weight){
   if(Weight > 989.0f){
     LedOn(Led_Verd_GPIO_Port, Led_Verd_Pin);
@@ -185,6 +189,10 @@ EstadoID tlp(Contexto *ctx){
   Leds(weight);
 
   if(weight > 990.0f){
+    LedOff(Led_Verd_GPIO_Port, Led_Verd_Pin);
+    LedOff(Led_Ama_GPIO_Port, Led_Ama_Pin);
+    LedOff(Led_Laran_GPIO_Port, Led_Laran_Pin);
+    LedOff(Led_Verm_GPIO_Port, Led_Verm_Pin);
     return EST_CalcPrint_Peso;
   }
 
