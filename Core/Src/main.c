@@ -27,12 +27,14 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include "hx711.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 typedef struct {
   float Tempo;
+  float Factor_Calibration;
 } Contexto;
 
 typedef enum {
@@ -47,12 +49,12 @@ typedef EstadoID Estadofunc(Contexto *ctx);
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define SAMPLES 20
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+HX711_Handle_t hx;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -133,7 +135,7 @@ bool BtnDebounce(bool currentState, bool *stableState, uint32_t *lastChangeTime,
 
 EstadoID setup(Contexto *ctx){
   ctx->Tempo = 0.0f;
-
+  ctx->Factor_Calibration = 447.6f;
   return EST_START;
 }
 
@@ -157,8 +159,14 @@ EstadoID tlp(Contexto *ctx){
   if(FistEntry){
     Cronometro(true);
     FistEntry = false;
+    HX711_Tare(&hx, SAMPLES); //Tare Function
+    printf("TARA REALIZADA - Iniciando contagem de tempo e leitura do peso.\r\n");
   }
   
+  float weight = HX711_GetWeight(&hx, SAMPLES, ctx->Factor_Calibration);
+  printf("Peso: %.2f g\r\n", weight);
+  
+
   HAL_GPIO_WritePin(LedProto_GPIO_Port, LedProto_Pin, GPIO_PIN_SET);
 
   //Reset button
@@ -176,6 +184,7 @@ EstadoID tlp(Contexto *ctx){
 }
 
 EstadoID cpp(Contexto *ctx){
+  //bool btnPressed = (HAL_GPIO_ReadPin(Reset_GPIO_Port, Reset_Pin) != GPIO_PIN_RESET);
 
   //Reset button
   if( BtnDebounce(HAL_GPIO_ReadPin(Reset_GPIO_Port, Reset_Pin), &lastBtnResetState, &LastResetTime, debounceDelay)){
@@ -228,6 +237,13 @@ int main(void)
     [EST_TimerLedPeso] = tlp,
     [EST_CalcPrint_Peso] = cpp
   };
+
+  //Configurações do HX711  
+  hx.dt_Port  = DT_GPIO_Port;
+  hx.dt_Pin   = DT_Pin;
+  hx.sck_Port = SCK_GPIO_Port;
+  hx.sck_Pin  = SCK_Pin;
+  hx.gain     = HX711_GAIN_128;
   /* USER CODE END 2 */
 
   /* Infinite loop */
