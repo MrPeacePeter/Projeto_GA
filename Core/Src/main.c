@@ -168,7 +168,7 @@ EstadoID tlp(Contexto *ctx){
   float weight = HX711_GetWeight(&hx, SAMPLES, ctx->Factor_Calibration);
   printf("Peso: %.2f g\r\n", weight);
 
-  if(weight > 980.0f){
+  if(weight > 990.0f){
     return EST_CalcPrint_Peso;
   }
 
