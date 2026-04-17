@@ -67,6 +67,8 @@ void Error_Handler(void);
 #define USART_RX_GPIO_Port GPIOA
 #define LedProto_Pin GPIO_PIN_5
 #define LedProto_GPIO_Port GPIOA
+#define SCK_Pin GPIO_PIN_7
+#define SCK_GPIO_Port GPIOA
 #define Led_Verd_Pin GPIO_PIN_14
 #define Led_Verd_GPIO_Port GPIOB
 #define Led_Azul_Pin GPIO_PIN_15
@@ -75,10 +77,6 @@ void Error_Handler(void);
 #define Led_Ama_GPIO_Port GPIOC
 #define Led_Verm_Pin GPIO_PIN_7
 #define Led_Verm_GPIO_Port GPIOC
-#define SCK_Pin GPIO_PIN_8
-#define SCK_GPIO_Port GPIOC
-#define DT_Pin GPIO_PIN_9
-#define DT_GPIO_Port GPIOC
 #define Reset_Pin GPIO_PIN_8
 #define Reset_GPIO_Port GPIOA
 #define Start_Pin GPIO_PIN_9
@@ -89,6 +87,8 @@ void Error_Handler(void);
 #define TCK_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
+#define DT_Pin GPIO_PIN_6
+#define DT_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

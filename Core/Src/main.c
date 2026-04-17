@@ -18,8 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32f3xx_hal.h"
-#include "stm32f3xx_hal_gpio.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -224,12 +222,12 @@ int main(void)
   Contexto meuContexto = {0};
   EstadoID estadoAtual = EST_SETUP;
 
-    Estadofunc *tabela_estados[] = {
-      [EST_SETUP] = setup,
-      [EST_START] = start,
-      [EST_TimerLedPeso] = tlp,
-      [EST_CalcPrint_Peso] = cpp
-    };
+  Estadofunc *tabela_estados[] = {
+    [EST_SETUP] = setup,
+    [EST_START] = start,
+    [EST_TimerLedPeso] = tlp,
+    [EST_CalcPrint_Peso] = cpp
+  };
   /* USER CODE END 2 */
 
   /* Infinite loop */
