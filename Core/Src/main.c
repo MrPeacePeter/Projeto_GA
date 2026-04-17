@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "stm32f3xx_hal.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -35,6 +36,7 @@
 typedef struct {
   float Tempo;
   float Factor_Calibration;
+  bool FirstEntry;
 } Contexto;
 
 typedef enum {
@@ -136,6 +138,7 @@ bool BtnDebounce(bool currentState, bool *stableState, uint32_t *lastChangeTime,
 EstadoID setup(Contexto *ctx){
   ctx->Tempo = 0.0f;
   ctx->Factor_Calibration = 447.6f;
+  ctx->FirstEntry = true;
   return EST_START;
 }
 
@@ -153,29 +156,27 @@ EstadoID start(Contexto *ctx){
 }
 
 EstadoID tlp(Contexto *ctx){
-  static bool FistEntry = true;
   bool btnPressed = (HAL_GPIO_ReadPin(Reset_GPIO_Port, Reset_Pin) != GPIO_PIN_RESET);
 
-  if(FistEntry){
+  if(ctx->FirstEntry){
+    printf("AGUARDE A TARA SER REALIZADA - NÃO COLOQUE NENHUM PESO NO SENSOR DURANTE ESTE PROCESSO.\r\n");
     Cronometro(true);
-    FistEntry = false;
+    ctx->FirstEntry = false;
     HX711_Tare(&hx, SAMPLES); //Tare Function
     printf("TARA REALIZADA - Iniciando contagem de tempo e leitura do peso.\r\n");
   }
   
   float weight = HX711_GetWeight(&hx, SAMPLES, ctx->Factor_Calibration);
   printf("Peso: %.2f g\r\n", weight);
-  
 
-  HAL_GPIO_WritePin(LedProto_GPIO_Port, LedProto_Pin, GPIO_PIN_SET);
+  if(weight > 980.0f){
+    return EST_CalcPrint_Peso;
+  }
 
   //Reset button
   if (BtnDebounce(btnPressed, &lastBtnResetState, &LastResetTime, debounceDelay)){
-    printf("BOTÃO RESET PRESSIONADO - Resetando a máquina lógica.\r\n");
-    printf("Tempo Final: %.2f s\r\n", Cronometro(true));
-    Cronometro(false);
-
-    FistEntry = true;
+    printf("BOTÃO RESET PRESSIONADO - TLP - Resetando a máquina lógica.\r\n");
+    ctx->FirstEntry = true;
     
     return EST_START;
   }
@@ -184,15 +185,13 @@ EstadoID tlp(Contexto *ctx){
 }
 
 EstadoID cpp(Contexto *ctx){
-  //bool btnPressed = (HAL_GPIO_ReadPin(Reset_GPIO_Port, Reset_Pin) != GPIO_PIN_RESET);
+  printf("Tempo Final: %.2f s\r\n", Cronometro(true));
+  Cronometro(false);
+  ctx->FirstEntry = true;
+  HAL_Delay(1000); //Delay para garantir que a mensagem seja transmitida antes de resetar o sistema
+  printf("CÁLCULO E IMPRESSÃO DO PESO REALIZADOS - Resetando a máquina lógica.\r\n");
 
-  //Reset button
-  if( BtnDebounce(HAL_GPIO_ReadPin(Reset_GPIO_Port, Reset_Pin), &lastBtnResetState, &LastResetTime, debounceDelay)){
-    printf("BOTÃO RESET PRESSIONADO - Resetando a máquina lógica.\r\n");
-    return EST_START;
-  }
-  
-  return EST_CalcPrint_Peso;
+  return EST_START;
 }
 
 /* USER CODE END 0 */
