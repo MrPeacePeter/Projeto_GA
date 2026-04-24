@@ -181,7 +181,8 @@ EstadoID tlp(Contexto *ctx){
     printf("AGUARDE A TARA SER REALIZADA - NÃO COLOQUE NENHUM PESO NO SENSOR DURANTE ESTE PROCESSO.\r\n");
     Cronometro(true);
     ctx->FirstEntry = false;
-    HX711_Tare(&hx, SAMPLES); //Tare Function
+    HX711_Tare(&hx, SAMPLES); //Tare Function - Poderia ser incluida no setup, 
+                                          //mas não me percebi na primeira instancia.
     printf("TARA REALIZADA - Iniciando contagem de tempo e leitura do peso.\r\n");
   }
   
